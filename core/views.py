@@ -2,11 +2,18 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from .models import Profile
 # Create your views here.
 
+
+@login_required(login_url='signin')
 def index(request):
     return render(request, 'index.html')
+
+@login_required(login_url='signin')
+def settings(request):
+    return render(request, 'setting.html')
 
 def signup(request):
 
@@ -27,11 +34,13 @@ def signup(request):
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.save()
 
+                user_login = auth.authenticate(username=username, password=password)
+                auth.login(request, user_login)
 
                 user_model = User.objects.get(username=username)
                 new_profile = Profile.objects.create(user=user_model, id_userr=user_model.id)
                 new_profile.save()
-                return redirect('signup')
+                return redirect('settings')
         else:
             messages.info(request, 'Password Does Not Match')
             return redirect('signup')
@@ -56,3 +65,8 @@ def signin(request):
 
     else:
         return render(request, 'signin.html')
+
+@login_required(login_url='signin')
+def logout(request):
+    auth.logout(request)
+    return redirect('signin')
