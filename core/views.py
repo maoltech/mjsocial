@@ -13,7 +13,40 @@ def index(request):
 
 @login_required(login_url='signin')
 def settings(request):
-    return render(request, 'setting.html')
+    user_profile = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+
+        if request.FILES.get('image') == None:
+            image = user_profile.profileimg
+            bio = request.POST['bio']
+            location = request.POST['location']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+
+            user_profile.profileimg = image
+            user_profile.bio = bio
+            user_profile.location = location
+            user_profile.first_name = first_name
+            user_profile.last_name = last_name
+            user_profile.save()
+        if request.FILES.get('image') != None:
+            image = request.FILES.get('images')
+            bio = request.POST['bio']
+            location = request.POST['location']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
+
+            user_profile.profileimg = image
+            user_profile.bio = bio
+            user_profile.location = location
+            user_profile.first_name = first_name
+            user_profile.last_name = last_name
+            user_profile.save()      
+
+        return redirect('settings')    
+
+    return render(request, 'setting.html', {'user_profile': user_profile})
 
 def signup(request):
 
@@ -38,7 +71,7 @@ def signup(request):
                 auth.login(request, user_login)
 
                 user_model = User.objects.get(username=username)
-                new_profile = Profile.objects.create(user=user_model, id_userr=user_model.id)
+                new_profile = Profile.objects.create(user=user_model, id_user=user_model.id)
                 new_profile.save()
                 return redirect('settings')
         else:
