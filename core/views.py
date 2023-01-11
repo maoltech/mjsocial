@@ -31,7 +31,7 @@ def settings(request):
             user_profile.last_name = last_name
             user_profile.save()
         if request.FILES.get('image') != None:
-            image = request.FILES.get('images')
+            image = request.FILES.get('image')
             bio = request.POST['bio']
             location = request.POST['location']
             first_name = request.POST['first_name']
